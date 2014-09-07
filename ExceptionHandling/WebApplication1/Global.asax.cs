@@ -20,7 +20,7 @@ namespace WebApplication1
                 id = UrlParameter.Optional
             });
 
-            GlobalFilters.Filters.Add(new DebugHandleError());
+            //GlobalFilters.Filters.Add(new DebugHandleError());
         }
 
         protected void Session_Start(object sender, EventArgs e)

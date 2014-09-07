@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.WebPages;
 
 namespace WebApplication1.Controllers
 {
@@ -24,9 +25,10 @@ namespace WebApplication1.Controllers
             throw new BusinessRuleException("Business controller ...");
         }
 
-        public ActionResult Status(int status)
+        public ActionResult Status(int? status)
         {
-            return new HttpStatusCodeResult(status, "Status retornado pelo controller");
+            Response.SetStatus(status.GetValueOrDefault());
+            return View("Index");
         }
 
         public ActionResult NotFound()

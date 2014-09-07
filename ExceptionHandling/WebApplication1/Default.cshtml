@@ -26,8 +26,39 @@
     <script src="Scripts/notfoundscript.js"></script>
 </head>
 <body>
-    <div>
-        <p>200...</p>
-    </div>
+    <p>Status: @Response.StatusCode</p>
+    <p>Ajax</p>
+    <div id="results"></div>
+    <script>
+        $(function () {
+            function doAjaxRequest(url) {
+                var setup = {
+                    url: url,
+                    statusCode: {
+                        200: function () {
+                            $("#results").append("<br/>" + url + ": 200");
+                        },
+                        404: function () {
+                            $("#results").append("<br/>" + url + ": 404");
+                        },
+                        500: function () {
+                            $("#results").append("<br/>" + url + ": 500");
+                        }
+                    }
+                };
+
+                $.ajax(setup).always(function () {
+                    console.log(arguments);
+                });
+            }
+
+            doAjaxRequest('/Home/Index');
+
+            doAjaxRequest('/Home/Exception');
+
+            doAjaxRequest('/Home/NotFound');
+
+        });
+    </script>
 </body>
 </html>

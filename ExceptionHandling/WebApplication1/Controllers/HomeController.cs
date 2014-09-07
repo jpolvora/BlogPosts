@@ -12,6 +12,11 @@ namespace WebApplication1.Controllers
         // GET: Home
         public ActionResult Index()
         {
+            if (Request.IsAjaxRequest())
+            {
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            }
+
             return View();
         }
 

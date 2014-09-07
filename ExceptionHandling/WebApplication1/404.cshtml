@@ -1,9 +1,10 @@
 ﻿@{
+    Layout = null;
     Response.StatusCode = 404;
 
-    Layout = null;
     if (IsAjax)
     {
+        Response.ContentType = "application/json";
         Response.Write("Resource not found");
         return;
     }
@@ -13,24 +14,18 @@
 
     if (!requestingHtml)
     {
-        //não renderiza nada
+        //não renderiza conteúdo
         return;
     }
 }
 
 <!DOCTYPE html>
-
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title></title>
+    <title>404 - Not Found</title>
 </head>
 <body>
-    <div>
-        @{
-            <p>@Request.RawUrl</p>
-        }
-        <p>404...</p>
-    </div>
+    <p>@Request.RawUrl</p>
+    <p>Este recurso não existe</p>
 </body>
 </html>

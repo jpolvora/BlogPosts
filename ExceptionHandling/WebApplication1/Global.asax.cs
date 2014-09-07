@@ -2,6 +2,8 @@
 using System.Configuration;
 using System.Diagnostics;
 using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
 using System.Web.WebPages;
 
 namespace WebApplication1
@@ -11,7 +13,14 @@ namespace WebApplication1
 
         protected void Application_Start(object sender, EventArgs e)
         {
+            RouteTable.Routes.MapRoute("default", "{controller}/{action}/{id}", new
+            {
+                controller = "home",
+                action = "index",
+                id = UrlParameter.Optional
+            });
 
+            GlobalFilters.Filters.Add(new DebugHandleError());
         }
 
         protected void Session_Start(object sender, EventArgs e)
@@ -39,7 +48,7 @@ namespace WebApplication1
 
             //setar o statuscode para que o IIS selecione a view correta (no web.config)
             Response.StatusCode = httpException.GetHttpCode();
-            Response.StatusDescription = httpException.Message; //todo: colocar uma msg melhor
+            Response.StatusDescription = rootException.Message; //todo: colocar uma msg melhor
 
             //checa se o ambiente é de produção
             bool release = ConfigurationManager.AppSettings["Environment"]

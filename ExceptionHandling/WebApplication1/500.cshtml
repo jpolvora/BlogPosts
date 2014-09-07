@@ -1,8 +1,18 @@
 ﻿@{
-    Layout = null;
     Response.StatusCode = 500;
+    Layout = null;
     if (IsAjax)
     {
+        Response.Write("Server Error.");
+        return;
+    }
+
+    const string html = "text/html";
+    bool requestingHtml = Request.AcceptTypes.Any(type => html.Equals(type, StringComparison.OrdinalIgnoreCase));
+
+    if (!requestingHtml)
+    {
+        //não renderiza nada
         return;
     }
 

@@ -10,14 +10,14 @@ namespace WebApplication1
     {
         protected readonly HttpApplication Application;
         protected readonly string ErrorViewPath;
-        protected readonly Action<Exception> LogAction;
+        protected readonly Action<HttpException> LogAction;
 
         public ExceptionHandler(HttpApplication application, string errorViewPath)
             : this(application, errorViewPath, exception => Trace.TraceError(exception.Message))
         {
         }
 
-        public ExceptionHandler(HttpApplication application, string errorViewPath, Action<Exception> logAction)
+        public ExceptionHandler(HttpApplication application, string errorViewPath, Action<HttpException> logAction)
         {
             Application = application;
             ErrorViewPath = errorViewPath;
@@ -34,6 +34,8 @@ namespace WebApplication1
             HttpException httpException = ex as HttpException ?? new HttpException("Unknown exception...", ex);
 
             var rootException = httpException.GetBaseException();
+
+            Trace.TraceError("Exception: {0}", rootException.Message);
 
             if (IsProduction())
             {

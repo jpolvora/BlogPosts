@@ -1,16 +1,14 @@
 ﻿@{
     Layout = null;
     Response.StatusCode = 404;
-
     if (IsAjax)
     {
-        Response.ContentType = "application/json";
         Response.Write("Resource not found");
         return;
     }
-
     const string html = "text/html";
-    bool requestingHtml = Request.AcceptTypes.Any(type => html.Equals(type, StringComparison.OrdinalIgnoreCase));
+    bool requestingHtml = Request.AcceptTypes.Any(type =>
+        html.Equals(type, StringComparison.OrdinalIgnoreCase));
 
     if (!requestingHtml)
     {
@@ -18,7 +16,6 @@
         return;
     }
 }
-
 <!DOCTYPE html>
 <html>
 <head>

@@ -1,45 +1,30 @@
 ﻿@{
-    Response.StatusCode = 500;
     Layout = null;
+    Response.StatusCode = 500;
     if (IsAjax)
     {
         Response.Write("Server Error.");
         return;
     }
-
     const string html = "text/html";
-    bool requestingHtml = Request.AcceptTypes.Any(type => html.Equals(type, StringComparison.OrdinalIgnoreCase));
+    bool requestingHtml = Request.AcceptTypes.Any(type =>
+        html.Equals(type, StringComparison.OrdinalIgnoreCase));
 
     if (!requestingHtml)
     {
-        //não renderiza nada
+        //não renderiza conteúdo
         return;
     }
-
-    string msg = "Ocorreu um erro.";
-    var error = Server.GetLastError();
-    if (error != null)
-    {
-        msg += error.ToString();
-    }
-    else if (Session["exception"] != null)
-    {
-        msg += Session["exception"].ToString();
-        Session.Remove("exception");
-    }
 }
-
 <!DOCTYPE html>
-
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title></title>
+    <title>Erro interno do servidor</title>
 </head>
 <body>
-    <div>
-        <p>500...</p>
-        <p>@msg</p>
-    </div>
+    <h2>Ocorreu um erro. Desculpe-nos pelo incoveniente. O administrador do site foi alertado.</h2>
+    <h3>@Session["exception"]</h3>
+    <h4>Original Url: @Request.RawUrl</h4>
 </body>
 </html>

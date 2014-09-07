@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
-using System.Linq;
 using System.Web;
 using System.Web.WebPages;
 
@@ -11,28 +8,26 @@ namespace WebApplication1
     public class ExceptionHandler<TException> : IDisposable
         where TException : Exception
     {
-        private readonly HttpApplication _application;
-        private readonly Action<Exception> _log;
+        protected readonly HttpApplication Application;
+        protected readonly string ErrorViewPath;
+        protected readonly Action<Exception> LogAction;
 
-        public ExceptionHandler(HttpApplication application, bool relase)
-            : this(application, exception => Trace.TraceError(exception.Message))
+        public ExceptionHandler(HttpApplication application, string errorViewPath)
+            : this(application, errorViewPath, exception => Trace.TraceError(exception.Message))
         {
-
         }
 
-        public ExceptionHandler(HttpApplication application, Action<Exception> log)
+        public ExceptionHandler(HttpApplication application, string errorViewPath, Action<Exception> logAction)
         {
-            this._application = application;
-            _log = log;
+            Application = application;
+            ErrorViewPath = errorViewPath;
+            LogAction = logAction;
         }
 
-       
-        public void Handle(bool releaseMode)
+        public virtual void HandleError()
         {
-            var server = _application.Server;
-            var response = _application.Response;
-            var context = _application.Context;
-            var session = _application.Session;
+            var server = Application.Server;
+            var response = Application.Response;
 
             Exception ex = server.GetLastError();
 
@@ -40,10 +35,10 @@ namespace WebApplication1
 
             var rootException = httpException.GetBaseException();
 
-            if (releaseMode)
+            if (IsProduction())
             {
                 //log or send email to developer notifiying the exception ?
-                _log(httpException);
+                LogAction(httpException);
                 server.ClearError();
             }
 
@@ -53,21 +48,16 @@ namespace WebApplication1
             response.StatusCode = statusCode;
             response.StatusDescription = rootException.Message; //todo: colocar uma msg melhor
 
-
             switch (statusCode)
             {
                 case 404:
-                    break;
+                    break; //IIS will handle 404
                 case 500:
                     {
-                        //check for exception types you want to show custom info
-                        //for example, business rules exceptions
+                        //check for exception type you want to show custom rendering
                         if (!(rootException is TException))
                         {
-                            //will show default 500.
-                            //to show default 500 in dev mode, call Server.ClearError() 
-                            //or modify web.config to debug=false
-                            break;
+                            break; //IIS will handle 500
                         }
                         server.ClearError();
                         response.TrySkipIisCustomErrors = true;
@@ -75,17 +65,11 @@ namespace WebApplication1
 
                         try
                         {
-                            //atualiza os paths para o request (exceto RawUrl)
-                            context.RewritePath("~/error.cshtml");
-
-                            var handler = WebPageHttpHandler.CreateFromVirtualPath("~/Error.cshtml");
-                            session["exception"] = rootException;
-                            handler.ProcessRequest(context);
-                            session.Remove("exception");
+                            RenderException(rootException as TException);
                         }
                         catch
                         {
-                            //erro ao renderizar a página customizada, então Response.Write como fallback
+                            //fallback to response.Write
                             response.Write(rootException.ToString());
                         }
                         break;
@@ -93,9 +77,34 @@ namespace WebApplication1
             }
         }
 
-        public void Dispose()
+        /// <summary>
+        /// retorna true se app está em produção
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsProduction()
         {
-            _application.CompleteRequest();
+            return Application.Context.IsCustomErrorEnabled;
+        }
+
+        /// <summary>
+        /// Overridable Method. Default implementation uses Razor WebPages.
+        /// </summary>
+        /// <param name="exception"></param>
+        public virtual void RenderException(TException exception)
+        {
+            //stores exception in session for later retrieve
+            Application.Session["exception"] = exception;
+
+            //executa a página
+            var handler = WebPageHttpHandler.CreateFromVirtualPath(ErrorViewPath);
+            handler.ProcessRequest(Application.Context);
+
+            Application.Session.Remove("exception");
+        }
+
+        public virtual void Dispose()
+        {
+            Application.CompleteRequest();
         }
     }
 }

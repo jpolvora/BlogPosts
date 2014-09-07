@@ -93,7 +93,6 @@
     <Content Include="packages.config" />
     <Content Include="404.cshtml" />
     <Content Include="500.cshtml" />
-    <Content Include="Error.cshtml" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />

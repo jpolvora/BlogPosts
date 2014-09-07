@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.WebPages;
 
@@ -16,7 +13,6 @@ namespace WebApplication1.Controllers
             {
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
-
             return View();
         }
 
@@ -27,7 +23,7 @@ namespace WebApplication1.Controllers
 
         public ActionResult BusinessException()
         {
-            throw new BusinessRuleException("Business controller ...");
+            throw new BusinessRuleException("Ocorreu um erro de regra de negócios ...");
         }
 
         public ActionResult Status(int? status)

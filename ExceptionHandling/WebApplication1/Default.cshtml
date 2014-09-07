@@ -1,0 +1,30 @@
+﻿@{
+    Layout = null;
+    if (!UrlData[0].IsEmpty())
+    {
+        switch (UrlData[0])
+        {
+            case "404":
+                throw new HttpException(404, "teste 404");
+            case "500":
+                throw new HttpException(500, "teste 500");
+            default:
+                    throw new Exception("general exception");
+        }
+
+    }
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <div>
+        <p>200...</p>
+    </div>
+</body>
+</html>

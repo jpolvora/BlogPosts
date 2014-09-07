@@ -1,0 +1,26 @@
+﻿@{
+    Layout = null;
+    Exception toRender = Session["exception"] as Exception ?? new Exception("Erro desconhecido");
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <div>
+        <p>Detalhes do erro...</p>
+        <p>StatusCode: @Response.StatusCode</p>
+        <p>StatusDescription: @Response.StatusDescription</p>
+        <p>url: @Request.Url</p>
+        <p>rawurl: @Request.RawUrl</p>
+        <p>path: @Request.Path</p>
+        <p>file: @Request.CurrentExecutionFilePath</p>
+        <small>@toRender.ToString()</small>
+    </div>
+</body>
+</html>

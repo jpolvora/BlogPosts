@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
-using System.Linq;
 using System.Web;
-using System.Web.Security;
-using System.Web.SessionState;
 using System.Web.WebPages;
-using System.Web.WebPages.Razor;
 
 namespace WebApplication1
 {
@@ -36,70 +31,70 @@ namespace WebApplication1
 
         protected void Application_Error(object sender, EventArgs e)
         {
-            Exception exception = Server.GetLastError();
+            Exception ex = Server.GetLastError();
 
-            HttpException httpException = exception as HttpException
-                ?? new HttpException("Unknown exception...", exception);
+            HttpException httpException = ex as HttpException ?? new HttpException("Unknown exception...", ex);
 
-            Response.StatusCode = httpException.GetHttpCode(); //setar o statuscode para selecionar o template correto no web.config
-            Response.StatusDescription = httpException.Message; //msg //todo: editar
+            var rootException = httpException.GetBaseException();
 
+            //setar o statuscode para que o IIS selecione a view correta (no web.config)
+            Response.StatusCode = httpException.GetHttpCode();
+            Response.StatusDescription = httpException.Message; //todo: colocar uma msg melhor
 
-            bool producao = ConfigurationManager.AppSettings["Environment"]
+            //checa se o ambiente é de produção
+            bool release = ConfigurationManager.AppSettings["Environment"]
                 .Equals("Release", StringComparison.OrdinalIgnoreCase);
 
-            if (producao)
+            if (release)
             {
                 //log or send email to developer notifiying the exception ?
                 LogException(httpException);
+                Server.ClearError();
             }
 
-            if (UseGenericResponse(httpException))
-                return;
+            var statusCode = httpException.GetHttpCode();
+            switch (statusCode)
+            {
+                case 404:
+                    break;
+                case 500:
+                    {
+                        //check for exception types you want to show custom info
+                        //for example, business rules exceptions
+                        if (!(rootException is BusinessRuleException))
+                        {
+                            //will show default 500.
+                            //to show default 500 in dev mode, call Server.ClearError() 
+                            //or modify web.config to debug=false
+                            break;
+                        }
+                        Server.ClearError();
+                        Response.TrySkipIisCustomErrors = true;
+                        Response.Clear();
 
-            //necessário p/ exibir a página customizada
-            Server.ClearError(); //deve limpar o erro
+                        try
+                        {
+                            //atualiza os paths para o request (exceto RawUrl)
+                            Context.RewritePath("~/error.cshtml");
 
-            Response.TrySkipIisCustomErrors = true;
-            Response.Clear();
-            //shows a page with detailed information
-            RenderException(Context, exception);
-
-            Response.End();
-        }
-
-        private static bool UseGenericResponse(HttpException exception)
-        {
-            var code = exception.GetHttpCode();
-            if (code == 404)
-                return true;
-
-            return exception.InnerException is HttpException;
-
+                            var handler = WebPageHttpHandler.CreateFromVirtualPath("~/Error.cshtml");
+                            Session["exception"] = rootException;
+                            handler.ProcessRequest(Context);
+                            Session.Remove("exception");
+                        }
+                        catch
+                        {
+                            //erro ao renderizar a página customizada, então Response.Write como fallback
+                            Response.Write(httpException.ToString());
+                        }
+                        break;
+                    }
+            }
         }
 
         static void LogException(HttpException exception)
         {
             //send email here...
-        }
-
-        static void RenderException(HttpContext httpContext, Exception exception)
-        {
-            try
-            {
-                //atualiza os paths para o request (exceto RawUrl)
-                httpContext.RewritePath("~/error.cshtml");
-
-                var handler = WebPageHttpHandler.CreateFromVirtualPath("~/Error.cshtml");
-                httpContext.Session["exception"] = exception;
-                handler.ProcessRequest(httpContext);
-                httpContext.Session.Remove("exception");
-            }
-            catch
-            {
-                //erro ao renderizar a página customizada, então fallback p/ response.write()
-                httpContext.Response.Write(exception.ToString());
-            }
         }
 
         protected void Session_End(object sender, EventArgs e)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using System.Diagnostics;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -46,10 +45,6 @@ namespace WebApplication1
 
             var rootException = httpException.GetBaseException();
 
-            //setar o statuscode para que o IIS selecione a view correta (no web.config)
-            Response.StatusCode = httpException.GetHttpCode();
-            Response.StatusDescription = rootException.Message; //todo: colocar uma msg melhor
-
             //checa se o ambiente é de produção
             bool release = ConfigurationManager.AppSettings["Environment"]
                 .Equals("Release", StringComparison.OrdinalIgnoreCase);
@@ -62,6 +57,12 @@ namespace WebApplication1
             }
 
             var statusCode = httpException.GetHttpCode();
+
+            //setar o statuscode para que o IIS selecione a view correta (no web.config)
+            Response.StatusCode = statusCode;
+            Response.StatusDescription = rootException.Message; //todo: colocar uma msg melhor
+
+            
             switch (statusCode)
             {
                 case 404:

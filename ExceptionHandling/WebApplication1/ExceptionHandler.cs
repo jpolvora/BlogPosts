@@ -31,18 +31,18 @@ namespace WebApplication1
 
             Exception ex = server.GetLastError();
 
-            HttpException httpException = ex as HttpException 
+            HttpException httpException = ex as HttpException
                 ?? new HttpException("Generic exception...", ex);
 
             var rootException = httpException.GetBaseException();
 
-            Trace.TraceError("Exception: {0}", rootException.Message);
+            Trace.TraceError("[ExceptionHandler]: {0}", rootException.Message);
 
             if (IsProduction())
             {
                 //log or send email to developer notifiying the exception ?
                 LogAction(httpException);
-                //server.ClearError();
+                server.ClearError(); //limpar o erro para exibir a página customizada
             }
 
             var statusCode = httpException.GetHttpCode();

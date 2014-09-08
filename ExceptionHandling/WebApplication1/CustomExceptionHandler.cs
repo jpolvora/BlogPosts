@@ -27,9 +27,9 @@ namespace WebApplication1
             return base.IsProduction();
         }
 
-        protected override void RenderException(BusinessRuleException exception)
+        protected override void RenderCustomException(BusinessRuleException exception)
         {
-            base.RenderException(exception);
+            base.RenderCustomException(exception);
         }
     }
 }

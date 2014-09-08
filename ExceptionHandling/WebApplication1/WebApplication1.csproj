@@ -122,6 +122,7 @@
   <ItemGroup>
     <Compile Include="BusinessRuleException.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="CustomExceptionHandler.cs" />
     <Compile Include="DebugHandleError.cs" />
     <Compile Include="ExceptionHandler.cs" />
     <Compile Include="Global.asax.cs">

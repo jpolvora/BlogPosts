@@ -37,16 +37,11 @@ namespace WebApplication1
 
         protected void Application_Error(object sender, EventArgs e)
         {
-            using (var handler = new ExceptionHandler<BusinessRuleException>(this, "~/500.cshtml", LogException))
+            using (var customHandler = new CustomExceptionHandler(this,
+                "~/500.cshtml"))
             {
-                handler.HandleError();
+                customHandler.HandleError();
             }
-        }
-
-        static void LogException(Exception exception)
-        {
-            //send email here...
-            Trace.TraceError(exception.Message);
         }
 
         protected void Session_End(object sender, EventArgs e)

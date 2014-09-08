@@ -92,7 +92,7 @@ namespace WebApplication1
         /// Overridable Method. Default implementation uses Razor WebPages.
         /// </summary>
         /// <param name="exception"></param>
-        public virtual void RenderException(TException exception)
+        protected virtual void RenderException(TException exception)
         {
             //stores exception in session for later retrieve
             Application.Session["exception"] = exception;

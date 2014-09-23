@@ -1,3 +1,5 @@
+using EFBase;
+
 namespace Contoso.Migrations
 {
     using System;
@@ -10,6 +12,7 @@ namespace Contoso.Migrations
         public ContosoMigration()
         {
             AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(ContosoCtx context)

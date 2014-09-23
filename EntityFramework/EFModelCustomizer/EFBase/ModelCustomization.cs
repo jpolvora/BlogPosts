@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 
-namespace Contoso
+namespace EFBase
 {
-    public class Customization
+    public class ModelCustomization
     {
         internal static readonly List<Action<DbModelBuilder>> Customizations 
             = new List<Action<DbModelBuilder>>();

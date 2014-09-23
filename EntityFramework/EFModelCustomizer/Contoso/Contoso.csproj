@@ -48,13 +48,18 @@
   <ItemGroup>
     <Compile Include="Customer.cs" />
     <Compile Include="ContosoCtx.cs" />
-    <Compile Include="Customization.cs" />
     <Compile Include="Migrations\ContosoMigration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EFBase\EFBase.csproj">
+      <Project>{fe234cc8-4f6f-42f1-af29-ca26112223a7}</Project>
+      <Name>EFBase</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

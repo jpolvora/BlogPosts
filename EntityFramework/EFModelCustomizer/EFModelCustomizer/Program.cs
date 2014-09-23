@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Contoso;
+using EFBase;
 
 namespace EFModelCustomizer
 {
@@ -11,17 +12,18 @@ namespace EFModelCustomizer
     {
         static void Main(string[] args)
         {
-            Customization.Register(modelBuilder =>
+            ModelCustomization.Register(modelBuilder =>
             {
-                modelBuilder.Entity<Customer>().Map<SuperCustomer>(x => x.MapInheritedProperties());
+                modelBuilder.Entity<SuperCustomer>().ToTable("NewCustomers");
                 modelBuilder.Entity<Customer>().Property(x => x.Name).HasColumnAnnotation("StringLenght", 100);
             });
 
 
-            ContosoCtx.Initialize();
 
             using (var db = new ContosoCtx())
             {
+                db.Database.Initialize(false);
+
                 var customers = db.Customers.ToList();
 
                 foreach (var customer in customers)
@@ -33,9 +35,6 @@ namespace EFModelCustomizer
             Console.WriteLine("...");
 
             Console.ReadKey();
-
-
-
         }
     }
 }

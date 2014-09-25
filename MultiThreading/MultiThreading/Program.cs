@@ -24,6 +24,9 @@ namespace MultiThreading
             Thread.CurrentThread.Name = "MainThread";
             mainThreadId = Thread.CurrentThread.ManagedThreadId;
 
+            /*
+             * FOREGROUND THREADS
+             */
             for (int i = 0; i < 10; i++)
             {
                 DoWork(i); //executada pela thread principal
@@ -36,13 +39,14 @@ namespace MultiThreading
             }
             Console.WriteLine("Waiting for threads finish...Press Any key to finish them");
 
+            /*
+             * BACKGROUND THREADS
+             */
             for (int i = 0; i < 10; i++)
             {
-                //agora threads do tipo Background.
                 var backgroundThread = new Thread(DoWork) { Name = "BackgroundThread-" + i };
                 backgroundThread.IsBackground = true;
-                //estas threads são do tipo Background 
-                //a thread que as chama, caso encerrada, não espera que elas terminem.
+                //a thread HOST, caso encerrada, não espera que elas terminem.
                 backgroundThread.Start(i);
             }
 
@@ -52,6 +56,13 @@ namespace MultiThreading
                 //reaproveita threads
 
                 ThreadPool.QueueUserWorkItem(DoWork, i);
+            }
+
+            for (int i = 0; i < 20; i++)
+            {
+               //tasks utilizam o ThreadPool
+
+                Task.Factory.StartNew(DoWork, i);
             }
 
             Console.ReadKey(true);
@@ -72,7 +83,7 @@ namespace MultiThreading
                     : Thread.CurrentThread.Name;
 
                 var sw = Stopwatch.StartNew();
-                Console.WriteLine(@"Thread {0} running on {1}º processor, threadPoolThread: {2}, backgroundThread: {3}",
+                Console.WriteLine(@"Thread {0}, processor: {1}, threadPoolThread: {2}, backgroundThread: {3}",
                     threadName,
                     GetCurrentProcessorNumber(),
                     Thread.CurrentThread.IsThreadPoolThread,

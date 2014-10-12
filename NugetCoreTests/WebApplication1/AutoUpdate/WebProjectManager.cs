@@ -34,7 +34,7 @@ namespace WebApplication1.AutoUpdate
             var walker = new InstallWalker(
                 localRepository,
                 sourceRepository,
-                new FrameworkName(".NET Framework, Version=4.0"),
+                VersionUtility.DefaultTargetFramework,
                 NullLogger.Instance, false, true, DependencyVersion.Highest);
             return (from operation in walker.ResolveOperations(package)
                     where operation.Action == PackageAction.Install

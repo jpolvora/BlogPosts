@@ -1,0 +1,1 @@
+.nuget\NuGet.exe pack WebApplication1\WebApplication1.csproj -Build -Verbose -Prop Configuration=Release -OutputDirectory packages
